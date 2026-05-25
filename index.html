@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DPS Tracker</title>
+    
+    <link rel="icon" type="image/png" href="logo.png">
+    
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="logo">Teams DPS Tracker</div>
+        <div class="backup-actions">
+            <button id="download-btn" class="btn btn-outline" title="Скачать JSON бэкап">
+                <span class="material-icons">download</span> Экспорт JSON
+            </button>
+            <input type="file" id="upload-input" style="display: none;" accept=".json">
+            <button id="upload-btn" class="btn btn-outline" title="Загрузить JSON бэкап">
+                <span class="material-icons">upload</span> Импорт JSON
+            </button>
+        </div>
+    </header>
+
+    <main class="main-container">
+        <section class="table-section">
+            <div class="table-header-actions">
+                <h2>Teams DPS</h2>
+                <button id="open-modal-btn" class="btn btn-success">
+                    <span class="material-icons">add</span> Добавить команду
+                </button>
+            </div>
+
+            <div class="table-wrapper">
+                <table id="teams-table">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th>Members (Click image or text to edit)</th>
+                            <th>DPS</th>
+                            <th>Total DMG</th>
+                            <th style="width: 80px; text-align: center;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="table-body">
+                        </tbody>
+                </table>
+            </div>
+        </section>
+
+        <aside class="notes-sidebar">
+            <h3><span class="material-icons">edit_note</span> Notes</h3>
+            <textarea id="notes-area" placeholder="Напишите здесь свои заметки..."></textarea>
+        </aside>
+    </main>
+
+    <div id="team-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h3>Добавить новую команду</h3>
+            <form id="team-form">
+                <div class="form-group">
+                    <label for="team-name">Название команды:</label>
+                    <input type="text" id="team-name" required placeholder="Например, Raiden National">
+                </div>
+                
+                <div class="form-group">
+                    <label>Участники (Ссылки на фото и подписи к ним):</label>
+                    <div class="member-input-row">
+                        <input type="text" class="m-url" placeholder="Ссылка на фото 1">
+                        <input type="text" class="m-note" placeholder="Подпись 1 (например, C2R1)">
+                    </div>
+                    <div class="member-input-row">
+                        <input type="text" class="m-url" placeholder="Ссылка на фото 2">
+                        <input type="text" class="m-note" placeholder="Подпись 2">
+                    </div>
+                    <div class="member-input-row">
+                        <input type="text" class="m-url" placeholder="Ссылка на фото 3">
+                        <input type="text" class="m-note" placeholder="Подпись 3">
+                    </div>
+                    <div class="member-input-row">
+                        <input type="text" class="m-url" placeholder="Ссылка на фото 4">
+                        <input type="text" class="m-note" placeholder="Подпись 4">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="team-dps">DPS (Числовое значение, суффикс K добавится сам):</label>
+                    <input type="number" step="0.1" id="team-dps" required placeholder="Например, 200.1">
+                </div>
+
+                <div class="form-group">
+                    <label for="team-dmg">Total DMG (Числовое значение, суффикс M добавится сам):</label>
+                    <input type="number" step="0.1" id="team-dmg" required placeholder="Например, 20.1">
+                </div>
+
+                <button type="submit" class="btn btn-success btn-block">Сохранить команду</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
