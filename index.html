@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DPS Tracker</title>
-    
+    <title>Teams DPSes by 4 rotations</title>
     <link rel="icon" type="image/png" href="logo.png">
-    
     <link rel="stylesheet" href="style.css">
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
@@ -28,7 +26,7 @@
     <main class="main-container">
         <section class="table-section">
             <div class="table-header-actions">
-                <h2>Teams DPS</h2>
+                <h2>Teams DPSes by 4 rotations</h2>
                 <button id="open-modal-btn" class="btn btn-success">
                     <span class="material-icons">add</span> Добавить команду
                 </button>
@@ -40,13 +38,13 @@
                         <tr>
                             <th>Team</th>
                             <th>Members (Click image or text to edit)</th>
-                            <th>DPS</th>
-                            <th>Total DMG</th>
+                            <th id="sort-dps" class="sortable-th">DPS ↕</th>
+                            <th id="sort-dps-standard" class="sortable-th">DPS Standard ↕</th>
+                            <th id="sort-dmg" class="sortable-th">Total DMG ↕</th>
                             <th style="width: 80px; text-align: center;">Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="table-body">
-                        </tbody>
+                    <tbody id="table-body"></tbody>
                 </table>
             </div>
         </section>
@@ -88,12 +86,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="team-dps">DPS (Числовое значение, суффикс K добавится сам):</label>
+                    <label for="team-dps">DPS:</label>
                     <input type="number" step="0.1" id="team-dps" required placeholder="Например, 200.1">
                 </div>
 
                 <div class="form-group">
-                    <label for="team-dmg">Total DMG (Числовое значение, суффикс M добавится сам):</label>
+                    <label for="team-dps-standard">DPS Standard:</label>
+                    <input type="number" step="0.1" id="team-dps-standard" required placeholder="Например, 180.5">
+                </div>
+
+                <div class="form-group">
+                    <label for="team-dmg">Total DMG:</label>
                     <input type="number" step="0.1" id="team-dmg" required placeholder="Например, 20.1">
                 </div>
 
