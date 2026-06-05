@@ -3,6 +3,9 @@ let appData = {
     notes: ""
 };
 
+let currentSortField = 'dps';
+let currentSortOrder = 'desc';
+
 const tableBody = document.getElementById('table-body');
 const notesArea = document.getElementById('notes-area');
 const modal = document.getElementById('team-modal');
@@ -20,6 +23,10 @@ window.addEventListener('DOMContentLoaded', () => {
         appData.notes = e.target.value;
         saveLocalData();
     };
+    
+    document.getElementById('sort-dps').onclick = () => toggleSort('dps');
+    document.getElementById('sort-dps-standard').onclick = () => toggleSort('dpsStandard');
+    document.getElementById('sort-dmg').onclick = () => toggleSort('dmg');
 });
 
 function loadLocalData() {
@@ -27,6 +34,13 @@ function loadLocalData() {
     if (local) {
         try {
             appData = JSON.parse(local);
+            if (Array.isArray(appData.teams)) {
+                appData.teams.forEach(team => {
+                    if (team.dpsStandard === undefined) {
+                        team.dpsStandard = 0;
+                    }
+                });
+            }
             notesArea.value = appData.notes || "";
         } catch (e) {
             console.error(e);
@@ -58,6 +72,11 @@ uploadInput.onchange = (e) => {
         try {
             const parsed = JSON.parse(event.target.result);
             if (parsed && Array.isArray(parsed.teams)) {
+                parsed.teams.forEach(team => {
+                    if (team.dpsStandard === undefined) {
+                        team.dpsStandard = 0;
+                    }
+                });
                 appData = parsed;
                 saveLocalData();
                 notesArea.value = appData.notes || "";
@@ -69,8 +88,26 @@ uploadInput.onchange = (e) => {
     uploadInput.value = "";
 };
 
+function toggleSort(field) {
+    if (currentSortField === field) {
+        currentSortOrder = currentSortOrder === 'desc' ? 'asc' : 'desc';
+    } else {
+        currentSortField = field;
+        currentSortOrder = 'desc';
+    }
+    renderTable();
+}
+
+function sortTeams() {
+    appData.teams.sort((a, b) => {
+        let valA = a[currentSortField] || 0;
+        let valB = b[currentSortField] || 0;
+        return currentSortOrder === 'desc' ? valB - valA : valA - valB;
+    });
+}
+
 function renderTable() {
-    appData.teams.sort((a, b) => b.dps - a.dps);
+    sortTeams();
     tableBody.innerHTML = '';
 
     appData.teams.forEach((team, teamIndex) => {
@@ -162,6 +199,19 @@ function renderTable() {
         };
         tdDps.onkeydown = (e) => { if(e.key === 'Enter') { e.preventDefault(); e.target.blur(); } };
 
+        const tdDpsStandard = document.createElement('td');
+        tdDpsStandard.contentEditable = true;
+        tdDpsStandard.textContent = `${team.dpsStandard}K`;
+        tdDpsStandard.onfocus = (e) => { e.target.textContent = team.dpsStandard; };
+        tdDpsStandard.onblur = (e) => {
+            let val = parseFloat(e.target.textContent.replace(/[^\d.]/g, ''));
+            if (isNaN(val)) val = 0;
+            team.dpsStandard = val;
+            saveLocalData();
+            renderTable();
+        };
+        tdDpsStandard.onkeydown = (e) => { if(e.key === 'Enter') { e.preventDefault(); e.target.blur(); } };
+
         const tdDmg = document.createElement('td');
         tdDmg.contentEditable = true;
         tdDmg.textContent = `${team.dmg}M`;
@@ -171,7 +221,7 @@ function renderTable() {
             if (isNaN(val)) val = 0;
             team.dmg = val;
             saveLocalData();
-            tdDmg.textContent = `${val}M`;
+            renderTable();
         };
         tdDmg.onkeydown = (e) => { if(e.key === 'Enter') { e.preventDefault(); e.target.blur(); } };
 
@@ -192,6 +242,7 @@ function renderTable() {
         tr.appendChild(tdName);
         tr.appendChild(tdMembers);
         tr.appendChild(tdDps);
+        tr.appendChild(tdDpsStandard);
         tr.appendChild(tdDmg);
         tr.appendChild(tdActions);
         tableBody.appendChild(tr);
@@ -227,6 +278,7 @@ if (submitBtn) {
 
         const nameInput = document.getElementById('team-name');
         const dpsInput = document.getElementById('team-dps');
+        const dpsStandardInput = document.getElementById('team-dps-standard');
         const dmgInput = document.getElementById('team-dmg');
 
         if (!nameInput || !nameInput.value.trim()) {
@@ -237,18 +289,24 @@ if (submitBtn) {
             alert("Пожалуйста, заполните поле DPS!");
             return;
         }
+        if (!dpsStandardInput || dpsStandardInput.value === "") {
+            alert("Пожалуйста, заполните поле DPS Standard!");
+            return;
+        }
         if (!dmgInput || dmgInput.value === "") {
             alert("Пожалуйста, заполните поле Total DMG!");
             return;
         }
 
         const dpsValue = Number(dpsInput.value.replace(/[^\d.]/g, '')) || 0;
+        const dpsStandardValue = Number(dpsStandardInput.value.replace(/[^\d.]/g, '')) || 0;
         const dmgValue = Number(dmgInput.value.replace(/[^\d.]/g, '')) || 0;
 
         const newTeam = {
             name: nameInput.value.trim(),
             members: membersArray,
             dps: dpsValue,
+            dpsStandard: dpsStandardValue,
             dmg: dmgValue
         };
 
